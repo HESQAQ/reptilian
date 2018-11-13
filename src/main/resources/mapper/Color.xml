@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="Color">
+
+    <select id="findAll"  parameterType="Color" resultType="Color">
+        select id,name,des,tt from color
+    </select>
+
+    <insert id="insert" parameterType="Color">
+       insert into color(id,name,des,tt) values(#{id},#{name},#{des},#{tt})
+    </insert>
+
+
+    <!--批量插入-->
+    <insert id="insertBatch" parameterType="java.util.List">
+        insert into color(id,name,des,tt)
+        <foreach close=")" collection="list" item="item" index="index" open="(" separator="union all">
+            select
+            #{item.id,jdbcType=VARCHAR},
+            #{item.name,jdbcType=VARCHAR},
+            #{item.des,jdbcType=VARCHAR},
+            #{item.tt,jdbcType=VARCHAR}
+            from dual
+        </foreach>
+    </insert>
+
+    <!-- 批量更新-->
+    <update id="updateBatch" parameterType="java.util.List" >
+        <foreach collection="list" item="item" index="index" open="begin" close=";end;" separator=";">
+            UPDATE color
+            SET
+            name= #{item.name,jdbcType=VARCHAR},
+            des=#{item.des,jdbcType=VARCHAR}
+            WHERE id = #{item.id,jdbcType=VARCHAR}
+        </foreach>
+
+    </update>
+
+    <!--批量删除-->
+    <delete id="deletedBatch" parameterType="java.util.List">
+        delete from color where id in
+        <foreach collection="list" item="item" index="index" separator="," open="(" close=")">
+            #{item.id}
+        </foreach>
+    </delete>
+
+    <update id="update" parameterType="Color" >
+            UPDATE color
+            SET
+            name= #{name,jdbcType=VARCHAR},
+            des=#{des,jdbcType=VARCHAR}
+            WHERE id = #{id,jdbcType=VARCHAR}
+    </update>
+
+
+
+</mapper>
